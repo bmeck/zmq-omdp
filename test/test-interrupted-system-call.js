@@ -19,11 +19,14 @@ test('catch interrupted system call', function(t) {
   // wrap heartbeat in a try/catch to detect errors
   var heartbeat = broker.heartbeat;
   broker.heartbeat = function override(workerId) {
+    var caught = false;
     try {
       heartbeat.call(broker, workerId);
     } catch (e) {
-      t.fail();
+      caught = true;
     }
+
+    t.ok(!caught);
     broker.stop();
     worker.stop();
     t.end();
@@ -58,11 +61,13 @@ test('allow other errors to flow through', function(t) {
   // wrap heartbeat in a try/catch to detect errors
   var heartbeat = broker.heartbeat;
   broker.heartbeat = function override(workerId) {
+    var caught = false;
     try {
       heartbeat.call(broker, workerId);
     } catch (e) {
-      t.fail();
+      caught = true;
     }
+    t.ok(caught);
     broker.stop();
     worker.stop();
     t.end();
